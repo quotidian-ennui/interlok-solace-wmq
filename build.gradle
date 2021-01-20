@@ -1,0 +1,62 @@
+ext {
+  interlokParentGradle = "https://raw.githubusercontent.com/adaptris-labs/interlok-build-parent/master/build.gradle"
+
+  // Change this to match the version that you want.
+  interlokVersion = '3.12.0B1-RELEASE'
+  // Specify a private repository that we need to resolve from.
+  // localInterlokRepo = 'https://my.private.artifact.repo/groups/private'
+
+  // Ensure variable substitutions work for 'check/build'
+  interlokVerifyEnvironmentProperties = [
+    SOLACE_HOST: "dummy",
+    SOLACE_PORT: "55555",
+    SOLACE_USER: "dummy",
+    SOLACE_PASSWORD: "dummy",
+    WMQ_HOST: "localhost",
+    WMQ_PORT: "1414",
+    WMQ_CHANNEL: "DEV.APP.SVRCONN",
+    WMQ_USER: "dummy",
+    WMQ_PASSWORD: "dummy"
+  ]
+
+  // If running in a CI pipeline, then interlokLicense might be a secret so
+  // we cater for that to 'check' work, w/o a license-docker.properties or similar.
+  interlokLicense= project.findProperty('interlokLicense') ?: "false"
+  interlokVerifySystemProperties = interlokLicense != "false" ? [ "interlok.license.key" : interlokLicense ] : [:]
+  solaceVersion='10.9.0'
+  mqVersion='9.1.5.0'
+}
+
+allprojects {
+  apply from: "${interlokParentGradle}"
+}
+
+configurations.all {
+  resolutionStrategy.cacheChangingModulesFor 0, "seconds"
+}
+
+dependencies {
+  // interlokRuntime ("com.adaptris:interlok-json:$interlokVersion") { changing=true }
+  // interlokRuntime ("com.adaptris:interlok-apache-http:$interlokVersion") { changing=true }
+  interlokRuntime ("com.adaptris:interlok-solace:$interlokVersion") { changing=true }
+  interlokRuntime ("com.adaptris:interlok-webspheremq:$interlokVersion") { changing=true }
+  interlokRuntime ("org.fusesource.jansi:jansi:2.1.1")
+
+  // ibm webspheremq may need to be located for your specific version, this is the public maven central version
+  // 9.1.5.0 is the "latest" in mavenCentral() but that had an artefact rename (so we didn't notice for a while...)
+  // interlokRuntime("com.ibm:allclient:8.0.0.5")
+  interlokRuntime("com.ibm.mq:com.ibm.mq.allclient:$mqVersion")
+
+
+  // In mavenCentral()
+  interlokRuntime ("com.solacesystems:sol-common:$solaceVersion")
+  interlokRuntime ("com.solacesystems:sol-jcsmp:$solaceVersion")
+  interlokRuntime ("com.solacesystems:sol-jms:$solaceVersion")
+
+
+  // interlokJavadocs group: "com.adaptris", name: "interlok-apache-http", version: "$interlokVersion", classifier: "javadoc", changing: true, transitive: false
+  // interlokJavadocs group: "com.adaptris", name: "interlok-json", version: "$interlokVersion", classifier: "javadoc", changing: true, transitive: false
+  interlokJavadocs group: "com.adaptris", name: "interlok-solace", version: "$interlokVersion", classifier: "javadoc", changing: true, transitive: false
+  interlokJavadocs group: "com.adaptris", name: "interlok-webspheremq", version: "$interlokVersion", classifier: "javadoc", changing: true, transitive: false
+
+}

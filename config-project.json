@@ -1,0 +1,28 @@
+{
+  "name" : "MyInterlokInstance",
+  "variableSets" : {
+    "default" : { },
+    "local-dev" : { }
+  },
+  "variableXpaths" : {
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"solace-jms\"]/user-name" : "${adapter.solace.user}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"solace-jms\"]/password" : "${adapter.solace.password}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"solace-jms\"]/vendor-implementation/broker-url" : "${adapter.solace.url}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"websphere-jms\"]/user-name" : "${adapter.wmq.user}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"websphere-jms\"]/password" : "${adapter.wmq.password}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"websphere-jms\"]/vendor-implementation/broker-port" : "${adapter.wmq.port}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"websphere-jms\"]/vendor-implementation/queue-manager" : "${adapter.wmq.queueManager}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"websphere-jms\"]/vendor-implementation/broker-host" : "${adapter.wmq.host}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"websphere-jms\"]/vendor-implementation/channel" : "${adapter.wmq.channel}",
+    "/adapter/channel-list/channel[unique-id=\"solace-to-wmq\"]/workflow-list/standard-workflow[unique-id=\"solace-to-wmq\"]/producer/endpoint" : "${adapter.wmq.endpoint}",
+    "/adapter/channel-list/channel[unique-id=\"wmq-filesystem\"]/workflow-list/standard-workflow[unique-id=\"pedantic-goldstine\"]/consumer/endpoint" : "${adapter.wmq.endpoint}"
+  },
+  "uidInXincludeCompntListFileName" : false,
+  "xincludeXpaths" : { },
+  "additionalFiles" : {
+    "bootstrap.properties" : "bootstrap.properties",
+    "log4j2.xml" : "log4j2.xml"
+  },
+  "optionalComponentsInUse" : [ "com.adaptris:interlok-solace:3.12.0B1-RELEASE", "com.adaptris:interlok-webspheremq:3.12.0B1-RELEASE" ],
+  "structured" : true
+}

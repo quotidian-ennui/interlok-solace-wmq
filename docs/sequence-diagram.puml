@@ -1,0 +1,20 @@
+@startuml "Solace WebsphereMQ Interop"
+
+participant External
+participant Channel_Jetty_Solace
+participant Solace
+participant Channel_Solace_WMQ
+participant WebsphereMQ
+participant Channel_WMQ_Local
+
+External->Channel_Jetty_Solace: HTTP Post
+activate Channel_Jetty_Solace
+  Channel_Jetty_Solace->Solace: Write to JMS Topic
+  Channel_Jetty_Solace-->External: HTTP OK
+deactivate Channel_Jetty_Solace
+Solace->Channel_Solace_WMQ: Deliver JMS Message
+Channel_Solace_WMQ->WebsphereMQ: Write to JMS Queue
+WebsphereMQ->Channel_WMQ_Local: Deliver JMS Message
+Channel_WMQ_Local->Channel_WMQ_Local: Write to Disk
+
+@enduml

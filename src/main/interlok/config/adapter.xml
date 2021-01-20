@@ -1,0 +1,186 @@
+<adapter>
+  <unique-id>MyInterlokInstance</unique-id>
+  <start-up-event-imp>com.adaptris.core.event.StandardAdapterStartUpEvent</start-up-event-imp>
+  <heartbeat-event-imp>com.adaptris.core.HeartbeatEvent</heartbeat-event-imp>
+  <shared-components>
+    <connections>
+      <jms-connection>
+        <unique-id>solace-jms</unique-id>
+        <user-name>${adapter.solace.user}</user-name>
+        <password>${adapter.solace.password}</password>
+        <client-id>solace-interlok</client-id>
+        <vendor-implementation class="basic-solace-implementation">
+          <broker-url>${adapter.solace.url}</broker-url>
+          <message-vpn>default</message-vpn>
+        </vendor-implementation>
+      </jms-connection>
+      <jms-connection>
+        <unique-id>websphere-jms</unique-id>
+        <connection-attempts>2</connection-attempts>
+        <connection-retry-interval>
+          <unit>SECONDS</unit>
+          <interval>5</interval>
+        </connection-retry-interval>
+        <user-name>${adapter.wmq.user}</user-name>
+        <password>${adapter.wmq.password}</password>
+        <client-id>websphere-interlok</client-id>
+        <vendor-implementation class="basic-mq-series-implementation">
+          <ccsid>-1</ccsid>
+          <transport-type>MQJMS_TP_CLIENT_MQ_TCPIP</transport-type>
+          <queue-manager>${adapter.wmq.queueManager}</queue-manager>
+          <channel>${adapter.wmq.channel}</channel>
+          <broker-host>${adapter.wmq.host}</broker-host>
+          <broker-port>${adapter.wmq.port}</broker-port>
+        </vendor-implementation>
+      </jms-connection>
+    </connections>
+    <services/>
+  </shared-components>
+  <event-handler class="default-event-handler">
+    <unique-id>DefaultEventHandler</unique-id>
+    <connection class="null-connection">
+      <unique-id>agitated-einstein</unique-id>
+    </connection>
+    <producer class="null-message-producer">
+      <unique-id>romantic-bartik</unique-id>
+    </producer>
+  </event-handler>
+  <message-error-handler class="null-processing-exception-handler">
+    <unique-id>silly-dijkstra</unique-id>
+  </message-error-handler>
+  <failed-message-retrier class="no-retries">
+    <unique-id>jolly-ptolemy</unique-id>
+  </failed-message-retrier>
+  <channel-list>
+    <channel>
+      <consume-connection class="jetty-embedded-connection">
+        <unique-id>jetty-connection</unique-id>
+      </consume-connection>
+      <produce-connection class="shared-connection">
+        <lookup-name>solace-jms</lookup-name>
+      </produce-connection>
+      <workflow-list>
+        <standard-workflow>
+          <consumer class="jetty-message-consumer">
+            <unique-id>jetty-to-solace</unique-id>
+            <path>/api/to-solace</path>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>gloomy-golick</unique-id>
+            <services/>
+          </service-collection>
+          <producer class="jms-producer">
+            <unique-id>to-solace</unique-id>
+            <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <message-translator class="text-message-translator"/>
+            <delivery-mode>PERSISTENT</delivery-mode>
+            <session-factory class="jms-default-producer-session"/>
+            <endpoint>jms:topic:FromJetty</endpoint>
+          </producer>
+          <produce-exception-handler class="null-produce-exception-handler"/>
+          <unique-id>jetty-to-solace</unique-id>
+          <message-metrics-interceptor>
+            <unique-id>jetty-to-solace-MessageMetrics</unique-id>
+            <timeslice-duration>
+              <unit>MINUTES</unit>
+              <interval>5</interval>
+            </timeslice-duration>
+            <timeslice-history-count>12</timeslice-history-count>
+          </message-metrics-interceptor>
+          <in-flight-workflow-interceptor>
+            <unique-id>jetty-to-solace-InFlight</unique-id>
+          </in-flight-workflow-interceptor>
+        </standard-workflow>
+      </workflow-list>
+      <unique-id>jetty-solace</unique-id>
+    </channel>
+    <channel>
+      <consume-connection class="shared-connection">
+        <lookup-name>solace-jms</lookup-name>
+      </consume-connection>
+      <produce-connection class="shared-connection">
+        <lookup-name>websphere-jms</lookup-name>
+      </produce-connection>
+      <workflow-list>
+        <standard-workflow>
+          <consumer class="jms-consumer">
+            <unique-id>desperate-ardinghelli</unique-id>
+            <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <message-translator class="auto-convert-message-translator">
+              <jms-output-type>Text</jms-output-type>
+            </message-translator>
+            <endpoint>jms:topic:FromJetty</endpoint>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>determined-montalcini</unique-id>
+            <services/>
+          </service-collection>
+          <producer class="jms-producer">
+            <unique-id>sick-raman</unique-id>
+            <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <message-translator class="text-message-translator">
+              <metadata-filter class="exclude-jms-headers"/>
+            </message-translator>
+            <delivery-mode>PERSISTENT</delivery-mode>
+            <session-factory class="jms-default-producer-session"/>
+            <endpoint>${adapter.wmq.endpoint}</endpoint>
+          </producer>
+          <produce-exception-handler class="null-produce-exception-handler"/>
+          <unique-id>solace-to-wmq</unique-id>
+          <message-metrics-interceptor>
+            <unique-id>solace-to-wmq-MessageMetrics</unique-id>
+            <timeslice-duration>
+              <unit>MINUTES</unit>
+              <interval>5</interval>
+            </timeslice-duration>
+            <timeslice-history-count>12</timeslice-history-count>
+          </message-metrics-interceptor>
+          <in-flight-workflow-interceptor>
+            <unique-id>solace-to-wmq-InFlight</unique-id>
+          </in-flight-workflow-interceptor>
+        </standard-workflow>
+      </workflow-list>
+      <unique-id>solace-to-wmq</unique-id>
+    </channel>
+    <channel>
+      <consume-connection class="shared-connection">
+        <lookup-name>websphere-jms</lookup-name>
+      </consume-connection>
+      <produce-connection class="null-connection">
+        <unique-id>hopeful-austin</unique-id>
+      </produce-connection>
+      <workflow-list>
+        <standard-workflow>
+          <consumer class="jms-consumer">
+            <unique-id>kickass-darwin</unique-id>
+            <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <message-translator class="auto-convert-message-translator">
+              <jms-output-type>Text</jms-output-type>
+            </message-translator>
+            <endpoint>${adapter.wmq.endpoint}</endpoint>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>cranky-liskov</unique-id>
+            <services/>
+          </service-collection>
+          <producer class="fs-producer">
+            <unique-id>peaceful-booth</unique-id>
+            <create-dirs>true</create-dirs>
+            <fs-worker class="fs-nio-worker"/>
+            <filename-creator class="formatted-filename-creator">
+              <filename-format>%1$s</filename-format>
+            </filename-creator>
+            <base-directory-url>file:///./fs/from-websphere</base-directory-url>
+          </producer>
+          <produce-exception-handler class="null-produce-exception-handler"/>
+          <unique-id>pedantic-goldstine</unique-id>
+        </standard-workflow>
+      </workflow-list>
+      <unique-id>wmq-filesystem</unique-id>
+    </channel>
+  </channel-list>
+  <message-error-digester class="standard-message-error-digester">
+    <unique-id>ErrorDigest</unique-id>
+    <digest-max-size>100</digest-max-size>
+  </message-error-digester>
+</adapter>

@@ -1,0 +1,4 @@
+license.properties
+license-*.properties
+.gradle
+build
