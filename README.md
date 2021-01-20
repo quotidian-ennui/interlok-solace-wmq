@@ -2,7 +2,7 @@
 
 This demo's integration between solace and webphsereMQ with the following channels.
 
-![Sequence](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/quotidian-ennui/interlok-solace-wmq/develop/docs/sequence.puml)
+![Sequence](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/quotidian-ennui/interlok-solace-wmq/main/docs/sequence.puml)
 
 ## Quickstart
 
