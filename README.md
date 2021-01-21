@@ -22,3 +22,4 @@ This demo's integration between solace and webphsereMQ with the following channe
 
 - https://github.com/adaptris-labs/interlok-build-parent
 - https://github.com/adaptris-labs/build-parent-json-csv
+- https://github.com/adaptris-labs/interlok-install-builder (this is a basic example of using the parent-gradle)
